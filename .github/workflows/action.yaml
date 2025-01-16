@@ -1,0 +1,30 @@
+name: My First Lambda Function
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check outt Code
+        uses: actions/checout@v2
+      - name: set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Libraries
+        run: |
+            cd function
+            python -m pip install --upgrade pip
+            if [ -f requirement.txt ]; then pip install -r requirement.txt -t .; fi
+      - name: Create Zip Bundle
+        run: |
+            cd function
+            zip -r ../${{ github.sha }}.zip .
+      - name: Archive the Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: zipped-bundle
+          path: ${{ github.sha }}.zip
+  
